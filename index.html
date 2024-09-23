@@ -1,74 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>QR Check-In System</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/1.4.0/html5-qrcode.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QR Check-In System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/1.4.0/html5-qrcode.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1 class="title">QR Check-In System</h1>
-    <div id="reader" class="reader"></div>
-    <div id="response" class="response"></div>
+    <div class="container">
+        <h1 class="title">QR Check-In System</h1>
+        <div id="reader" class="reader"></div>
+        <div id="response" class="response"></div>
 
-    <footer class="footer">
-      Made with ❤️ by <a href="https://www.linkedin.com/in/aryanpandya/" target="_blank">Aryan Pandya</a> for THM Surat
-    </footer>
-  </div>
+        <footer class="footer">
+            Made with ❤️ by <a href="https://www.linkedin.com/in/aryanpandya/" target="_blank">Aryan Pandya</a> for THM Surat
+        </footer>
+    </div>
 
-  <script>
-    function startScanner() {
-      const html5QrCode = new Html5Qrcode("reader");
+    <script>
+        function startScanner() {
+            const html5QrCode = new Html5Qrcode("reader");
 
-      const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-        fetch('https://script.google.com/macros/s/AKfycbz9NHpRBQlOHCSBwwiZn1WV8nHUDrMlxF8Q9tiIJEBzTIva_siCby6hR66nndixUc_C/exec', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ token: decodedText })
-        })
-        .then(response => response.json())
-        .then(data => {
-          const responseDiv = document.getElementById('response');
-          if (data.verified) {
-            responseDiv.innerHTML = `<span class="success">Token Verified! You may proceed.</span>`;
-          } else {
-            responseDiv.innerHTML = `<span class="error">${data.message}</span>`;
-          }
-        })
-        .catch(error => {
-          const responseDiv = document.getElementById('response');
-          responseDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
-        });
-      };
+            const qrCodeSuccessCallback = (decodedText) => {
+                fetch('https://script.google.com/macros/s/your-script-id/exec', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: decodedText })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    const responseDiv = document.getElementById('response');
+                    if (data.verified) {
+                        responseDiv.innerHTML = `<span class="success">Token Verified! You may proceed.</span>`;
+                    } else {
+                        responseDiv.innerHTML = `<span class="error">${data.message}</span>`;
+                    }
+                })
+                .catch(error => {
+                    const responseDiv = document.getElementById('response');
+                    responseDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+                });
+            };
 
-      const qrCodeErrorCallback = (errorMessage) => {
-        console.error("QR Code error:", errorMessage);
-      };
+            const qrCodeErrorCallback = (errorMessage) => {
+                console.error("QR Code error:", errorMessage);
+            };
 
-      html5QrCode.start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 }
-        },
-        qrCodeSuccessCallback,
-        qrCodeErrorCallback
-      ).catch(err => {
-        console.error("Error starting QR code scanner:", err);
-      });
-    }
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                qrCodeSuccessCallback,
+                qrCodeErrorCallback
+            ).catch(err => {
+                console.error("Error starting QR code scanner:", err);
+            });
+        }
 
-    navigator.mediaDevices.getUserMedia({ video: true })
-      .then(stream => {
-        startScanner();
-      })
-      .catch(err => {
-        alert("Camera access denied. Please allow camera permissions to use the QR Code scanner.");
-        console.error("Camera error:", err);
-      });
-  </script>
+        navigator.mediaDevices.getUserMedia({ video: true })
+            .then(stream => {
+                startScanner();
+            })
+            .catch(err => {
+                alert("Camera access denied. Please allow camera permissions to use the QR Code scanner.");
+                console.error("Camera error:", err);
+            });
+    </script>
 </body>
 </html>
