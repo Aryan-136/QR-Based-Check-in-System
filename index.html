@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QR Check-In System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header Section -->
+  <h1>QR Check-In System</h1>
+
+  <!-- Video Element for Scanning QR -->
+  <div class="video-container">
+    <video id="video" autoplay></video>
+  </div>
+
+  <!-- Scan Result Display -->
+  <p id="result">Scan a QR Code to check in.</p>
+
+  <!-- Footer Section -->
+  <footer>
+    Made with <span class="heart">❤️</span> by 
+    <a href="https://www.linkedin.com/in/aryanpandya/" target="_blank">Aryan Pandya</a> for THM Surat
+  </footer>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.3.1/jsQR.min.js"></script>
+  <script>
+    const video = document.getElementById('video');
+    const resultElement = document.getElementById('result');
+
+    // Access the device camera and stream to video element
+    navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } }).then(stream => {
+      video.srcObject = stream;
+    });
+
+    // Function to capture the QR code from the video
+    function captureQRCode() {
+      const canvas = document.createElement('canvas');
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      const context = canvas.getContext('2d');
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      const qrCode = jsQR(imageData.data, canvas.width, canvas.height);
+
+      if (qrCode) {
+        resultElement.textContent = `QR Code: ${qrCode.data}`;
+        verifyToken(qrCode.data);  // Call to verify token
+      } else {
+        resultElement.textContent = 'No QR code detected.';
+      }
+    }
+
+    // Continuously scan for QR code
+    setInterval(captureQRCode, 1000);
+
+    // Verify the scanned token via API or backend call
+    function verifyToken(token) {
+      fetch('https://script.google.com/macros/s/your-script-id/exec', {  // Replace with your Google Apps Script URL
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.verified) {
+          resultElement.textContent = 'Token verified successfully.';
+        } else {
+          resultElement.textContent = 'Token already used or invalid.';
+        }
+      })
+      .catch(error => console.error('Error verifying token:', error));
+    }
+  </script>
+
+</body>
+</html>
