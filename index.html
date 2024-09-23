@@ -6,17 +6,12 @@
   <title>QR Check-In System</title>
   <link rel="stylesheet" href="styles.css">
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/1.4.0/html5-qrcode.min.js"></script>
 </head>
 <body>
   <div class="container">
     <h1 class="title">QR Check-In System</h1>
-
-    <form id="qrForm" class="form">
-      <label for="token" class="label">Enter Token:</label>
-      <input type="text" id="token" name="token" required class="input">
-      <button type="submit" class="button">Verify Token</button>
-    </form>
-
+    <div id="reader" class="reader"></div>
     <div id="response" class="response"></div>
 
     <footer class="footer">
@@ -25,22 +20,17 @@
   </div>
 
   <script>
-    document.getElementById('qrForm').addEventListener('submit', function(e) {
-      e.preventDefault();
+    const html5QrCode = new Html5Qrcode("reader");
 
-      const token = document.getElementById('token').value;
-      const responseDiv = document.getElementById('response');
-
-      // Clear previous response
-      responseDiv.innerHTML = '';
-
-      fetch('https://script.google.com/macros/s/AKfycbwfjcv4mfQYjBN9jlsJmlazcRoVmY2jvywN6IKqOiptJ5ZizSlTQFH_DtuOHYvHuGf0/exec', {
+    const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+      fetch('https://script.google.com/macros/s/AKfycbz9NHpRBQlOHCSBwwiZn1WV8nHUDrMlxF8Q9tiIJEBzTIva_siCby6hR66nndixUc_C/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: token })
+        body: JSON.stringify({ token: decodedText })
       })
       .then(response => response.json())
       .then(data => {
+        const responseDiv = document.getElementById('response');
         if (data.verified) {
           responseDiv.innerHTML = `<span class="success">Token Verified! You may proceed.</span>`;
         } else {
@@ -48,8 +38,25 @@
         }
       })
       .catch(error => {
+        const responseDiv = document.getElementById('response');
         responseDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
       });
+    };
+
+    const qrCodeErrorCallback = (errorMessage) => {
+      // Handle error if needed
+    };
+
+    html5QrCode.start(
+      { facingMode: "environment" },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 }
+      },
+      qrCodeSuccessCallback,
+      qrCodeErrorCallback
+    ).catch(err => {
+      console.error("Error starting QR code scanner:", err);
     });
   </script>
 </body>
