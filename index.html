@@ -20,7 +20,6 @@
   </div>
 
   <script>
-    // Function to start the QR code scanner
     function startScanner() {
       const html5QrCode = new Html5Qrcode("reader");
 
@@ -49,7 +48,6 @@
         console.error("QR Code error:", errorMessage);
       };
 
-      // Start the QR code scanner
       html5QrCode.start(
         { facingMode: "environment" },
         {
@@ -63,7 +61,6 @@
       });
     }
 
-    // Check for camera permission and start the scanner
     navigator.mediaDevices.getUserMedia({ video: true })
       .then(stream => {
         startScanner();
