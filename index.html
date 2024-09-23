@@ -4,31 +4,53 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>QR Check-In System</title>
-  
-  <!-- Link to Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
-  
-  <!-- Link to CSS -->
   <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
 </head>
 <body>
   <div class="container">
-    <h1>QR Check-In System</h1>
+    <h1 class="title">QR Check-In System</h1>
 
-    <form id="qrForm">
-      <label for="token">Enter Token:</label>
-      <input type="text" id="token" name="token" required>
-      <button type="submit">Verify Token</button>
+    <form id="qrForm" class="form">
+      <label for="token" class="label">Enter Token:</label>
+      <input type="text" id="token" name="token" required class="input">
+      <button type="submit" class="button">Verify Token</button>
     </form>
 
-    <div id="response"></div>
+    <div id="response" class="response"></div>
+
+    <footer class="footer">
+      Made with ❤️ by <a href="https://www.linkedin.com/in/aryanpandya/" target="_blank">Aryan Pandya</a> for THM Surat
+    </footer>
   </div>
 
-  <footer>
-    <p>Made with ❤️ by <a href="https://www.linkedin.com/in/aryanpandya/" target="_blank">Aryan Pandya</a> for THM Surat</p>
-  </footer>
+  <script>
+    document.getElementById('qrForm').addEventListener('submit', function(e) {
+      e.preventDefault();
 
-  <!-- JavaScript -->
-  <script src="script.js"></script>
+      const token = document.getElementById('token').value;
+      const responseDiv = document.getElementById('response');
+
+      // Clear previous response
+      responseDiv.innerHTML = '';
+
+      fetch('https://script.google.com/macros/s/AKfycbwfjcv4mfQYjBN9jlsJmlazcRoVmY2jvywN6IKqOiptJ5ZizSlTQFH_DtuOHYvHuGf0/exec', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token: token })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.verified) {
+          responseDiv.innerHTML = `<span class="success">Token Verified! You may proceed.</span>`;
+        } else {
+          responseDiv.innerHTML = `<span class="error">${data.message}</span>`;
+        }
+      })
+      .catch(error => {
+        responseDiv.innerHTML = `<span class="error">Error: ${error.message}</span>`;
+      });
+    });
+  </script>
 </body>
 </html>
