@@ -23,7 +23,7 @@
     const html5QrCode = new Html5Qrcode("reader");
 
     const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-      fetch('https://script.google.com/macros/s/AKfycbz9NHpRBQlOHCSBwwiZn1WV8nHUDrMlxF8Q9tiIJEBzTIva_siCby6hR66nndixUc_C/exec', {
+      fetch('https://script.google.com/macros/s/your-script-id/exec', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ token: decodedText })
